@@ -4,7 +4,7 @@ Status: draft / ready_to_shoot. Priority and reason:
 - Audience and concrete task:
 - Reference URLs / explicit new hypothesis:
 - Evidence and caveat; relationship to own-account findings:
-- Product/SKU or selection criteria; stock/size check:
+- Product/service or selection criteria; inventory, availability or delivery-capacity check:
 - Opening frame and exact hook:
 - Scene order with approximate times and payoff:
 - Creator, location, camera, props and effort assumptions:

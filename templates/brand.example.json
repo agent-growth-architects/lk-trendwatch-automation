@@ -1,0 +1,12 @@
+{
+  "name": "",
+  "platform": "instagram",
+  "timezone": "",
+  "goal": "",
+  "audience": "",
+  "language": "ru",
+  "products": [],
+  "constraints": [],
+  "schedule": {"enabled": false, "local_time": null},
+  "heuristics": []
+}

@@ -15,6 +15,10 @@ args = parser.parse_args()
 project, run = Path(args.project).resolve(), Path(args.run).resolve()
 evidence = json.loads((run / 'evidence.json').read_text())
 state = tw.read(project / 'state.json')
+if any(p.get('platform', 'instagram') != 'instagram' for p in state['profiles']):
+    raise ValueError('This evidence adapter is Instagram-only; use generic ingest/render for other platforms')
+if evidence.get('run_status') in (None, 'in_progress') or not evidence.get('finished_collection_at'):
+    raise ValueError('Finalize only a finished collection with an explicit run_status')
 run_id = run.name
 finished = tw.now()
 source_blocked = evidence.get('run_status') == 'blocked_source_access'
@@ -28,6 +32,7 @@ for row in evidence['profiles']:
         dated_posts=progress.get('dated', 0), eligible_posts=progress.get('eligible', 0),
         source=str(run / 'evidence.json'), boundary=progress.get('boundary', [])))
 for row in state['profiles']:
+    if not row.get('approved'): continue
     if not row.get('handle'):
         attempts.append(dict(target=row['name'], observed_at=finished, status='not_attempted_unresolved_identity',
             run_id=run_id, source='approved registry; no replacement handle guessed'))
@@ -54,9 +59,10 @@ run_start, run_end = tw.stamp(evidence['started_at']), tw.stamp(evidence['finish
 run_observations = [o for o in state['observations'] if run_start <= tw.stamp(o['observed_at']) <= run_end]
 run_audio = [a for a in state['audio_observations'] if run_start <= tw.stamp(a['observed_at']) <= run_end]
 latest_observations = [p['latest'] for p in report['posts'] if p['latest'] is not None]
-coverage = dict(approved_brands=len(state['profiles']), known_handles=sum(bool(p.get('handle')) for p in state['profiles']),
+approved_profiles = [p for p in state['profiles'] if p.get('approved')]
+coverage = dict(approved_brands=len(approved_profiles), known_handles=sum(bool(p.get('handle')) for p in approved_profiles),
     accessible_grids=sum(bool(p['rows']) for p in evidence['profiles']),
-    unresolved_brands=[p['name'] for p in state['profiles'] if not p.get('handle')],
+    unresolved_brands=[p['name'] for p in approved_profiles if not p.get('handle')],
     unavailable_handles=[p['handle'] for p in evidence['profiles'] if not p['rows']],
     numeric_grid_reels=len({r['code'] for p in evidence['profiles'] for r in p['rows'] if r['display']}),
     discovered_grid_reels=len({r['code'] for p in evidence['profiles'] for r in p['rows']}),
@@ -84,7 +90,7 @@ execution = dict(run_id=run_id, started_at=evidence['started_at'], finished_coll
     attempt_statuses=dict(Counter(a['status'] for a in attempts)),
     measurement_note='Individual metric timestamps retained; comparable intervals: '+str(len(report['changes'])),
     media_note='Daily counter collection only; media not downloaded or re-reviewed.',
-    verification='State validator, metric timestamps, source/audio IDs and local links checked; no browser visual QA of local file.')
+    verification='State validator, metric timestamps and audio ID checks passed; visual rendering and links require separate review.')
 report.update(run_id=run_id, coverage=coverage, execution=execution)
 tw.write(run / 'execution.json', execution)
 tw.write(project / 'daily-summary.json', report)
@@ -122,16 +128,17 @@ for profile in state['profiles']:
     handle = profile.get('handle')
     progress = evidence['profile_progress'].get(handle, {})
     status = 'Граница 7 дней проверена' if progress.get('status') == 'seven_day_boundary_verified' else ('Профиль не установлен' if not handle else ('Ошибка доступа к источнику' if progress.get('status') == 'source_access_failed' else ('Не проверен: сбой контрольного запроса' if handle in evidence.get('unattempted_known_handles', []) else 'Страница недоступна')))
+    if not profile.get('approved'): status = 'Не одобрен для наблюдения'
     profile_rows.append('<tr><td>'+esc(profile['name'])+'</td><td>'+esc(handle or 'н/д')+'</td><td>'+status
         +'</td><td>'+str(progress.get('dated', 0))+'</td><td>'+str(progress.get('eligible', 0))+'</td></tr>')
 markup = '''<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LK Urban Dress: ежедневные снимки</title><style>body{font:16px/1.55 system-ui;max-width:1400px;margin:32px auto;padding:0 20px;color:#202020}table{border-collapse:collapse;font-size:13px;width:100%}th,td{padding:10px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}th{background:#f4f4f4}.scroll{overflow:auto}summary{cursor:pointer;font-weight:650;margin:20px 0}.note{background:#f5f5f5;padding:16px;border-radius:10px}a{color:#245c8c}</style>
-<h1>LK Urban Dress: ежедневные снимки</h1>'''
-markup += '<p>Проход '+esc(run_id)+'. Завершён: '+esc(finished)+'. Все временные метки в таблицах указаны в UTC; расписание работает по Москве.</p>'
+<title>{PROJECT_TITLE}: ежедневные снимки</title><style>body{font:16px/1.55 system-ui;max-width:1400px;margin:32px auto;padding:0 20px;color:#202020}table{border-collapse:collapse;font-size:13px;width:100%}th,td{padding:10px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}th{background:#f4f4f4}.scroll{overflow:auto}summary{cursor:pointer;font-weight:650;margin:20px 0}.note{background:#f5f5f5;padding:16px;border-radius:10px}a{color:#245c8c}</style>
+<h1>{PROJECT_TITLE}: ежедневные снимки</h1>'''.replace('{PROJECT_TITLE}', esc(state.get('project_name', 'Trendwatch')))
+markup += '<p>Проход '+esc(run_id)+'. Завершён: '+esc(finished)+'. Все временные метки в таблицах указаны в UTC; часовой пояс проекта: '+esc(state.get('timezone', 'UTC'))+'.</p>'
 if source_blocked:
     markup += '<div class="note"><b>Сбор не выполнен: источник недоступен.</b> '+esc(evidence.get('failure_summary', ''))+' Ожидали замера известных роликов: '+str(coverage['due_posts_at_run_start'])+'. Новые публикации не проверены. Ниже показаны прежние наблюдения; последний сохранённый замер Reels: '+esc(coverage['last_successful_reel_observation'])+'.</div>'
 elif source_partial:
-    markup += '<div class="note"><b>Доступ к Instagram восстановился; повторный сбор выполнен частично.</b> '+esc(evidence.get('failure_summary', ''))+' Непроверенных карточек в очереди этого прохода: '+str(coverage['pending_detail_candidates'])+'. В таблицах сохранены фактические даты замеров: старые показатели не считаются сегодняшними.</div>'
+    markup += '<div class="note"><b>Сбор выполнен частично.</b> '+esc(evidence.get('failure_summary', ''))+' Непроверенных карточек в очереди этого прохода: '+str(coverage['pending_detail_candidates'])+'. В таблицах сохранены фактические даты замеров: старые показатели не считаются сегодняшними.</div>'
 markup += '<p><b>Новые снимки: Reels '+str(coverage['new_daily_snapshots'])+', аудио '+str(coverage['new_audio_snapshots'])+'.</b> Всего Reels в базе: '+str(coverage['tracked_posts'])+', профилей: '+str(coverage['tracked_profiles'])+', снимков аудио: '+str(coverage['total_audio_snapshots'])+'.</p>'
 markup += '<p>Одобрено брендов: '+str(coverage['approved_brands'])+'; доступны сетки: '+str(coverage['accessible_grids'])+'. Карточек с проверенными датами публикаций: '+str(coverage['dated_detail_pages'])+'; уникальных Reels в сетках: '+str(coverage['discovered_grid_reels'])+'. Полный видеоразбор в этом ежедневном проходе не проводился.</p>'
 series_note = 'Это первый дневной срез. Сопоставимых ежедневных серий пока нет, поэтому выводов о росте трендов нет.' if not report['changes'] else 'Интервалы между сопоставимыми замерами: '+str(len(report['changes']))+'. Изменения и точность счётчиков сохранены в JSON; их причинная интерпретация требует отдельного анализа.'
@@ -141,7 +148,7 @@ markup += '<div class="note">'+series_note+' Дни D1–D7 отсчитываю
 markup += '<p>В последних сохранённых наблюдениях просмотры доступны у '+str(coverage['metric_availability']['views'])+' из '+str(coverage['tracked_posts'])+' роликов, лайки у '+str(coverage['metric_availability']['likes'])+', комментарии у '+str(coverage['metric_availability']['comments'])+', репосты у '+str(coverage['metric_availability']['reposts'])+'. Сохранения и личные отправки публично не получены. Ссылка на аудиокарточку не отобразилась у '+str(coverage['audio_link_unexposed'])+' роликов.</p>'
 markup += '<h2>Сохранённые показатели Reels</h2><p>Счётчики сетки и карточки могут быть сняты в разное время. Точные времена по каждому показателю сохранены в JSON.</p><div class="scroll"><table><tr><th>Ролик</th><th>Опубликован</th><th>День</th><th>Просмотры</th><th>Лайки</th><th>Комментарии</th><th>Репосты</th><th>Снимок собран</th></tr>'+''.join(rows)+'</table></div>'
 markup += '<details><summary>Аудиокарточки: '+str(len(audio_rows))+'</summary><div class="scroll"><table><tr><th>Аудио</th><th>Использований</th><th>Замер</th></tr>'+''.join(audio_rows)+'</table></div></details>'
-markup += '<details><summary>Покрытие брендов: '+str(coverage['approved_brands'])+'</summary><div class="scroll"><table><tr><th>Бренд</th><th>Профиль</th><th>Статус</th><th>Карточек с датами</th><th>В окне 7 дней</th></tr>'+''.join(profile_rows)+'</table></div></details>'
+markup += '<details><summary>Реестр профилей: '+str(len(state['profiles']))+'</summary><div class="scroll"><table><tr><th>Бренд</th><th>Профиль</th><th>Статус</th><th>Карточек с датами</th><th>В окне 7 дней</th></tr>'+''.join(profile_rows)+'</table></div></details>'
 markup += '<p><a href="daily-summary.json">Расчёты и покрытие</a> · <a href="state.json">История наблюдений</a> · <a href="runs/'+esc(run_id)+'/evidence.json">Исходные данные прохода</a> · <a href="runs/'+esc(run_id)+'/execution.json">Журнал выполнения</a></p></html>'
 (project / 'daily-report.html').write_text(markup)
 print(json.dumps(execution, ensure_ascii=False))

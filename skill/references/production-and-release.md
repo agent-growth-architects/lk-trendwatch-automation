@@ -1,8 +1,8 @@
 # Production, learning and delivery
 
-Load own-account findings and experiment log before ideation. Map each candidate to audience task, brand positioning, actual product availability and production resources. Use brand-specific evidence for garment/material claims. Separate observed outcomes, planned tests and new hypotheses.
+Load own-account findings and experiment log before ideation. Map each candidate to audience task, brand positioning, actual product availability and production resources. Use brand-specific evidence for product, service and performance claims. Separate observed outcomes, planned tests and new hypotheses.
 
-Start with three recommended tests and a reason for prioritization. Each production-ready brief uses assets/shooting-brief.md: refs or explicit new-hypothesis status, exact opening, timed scene order, product selection, creator/location/props, voice/text/sound/CTA, estimated effort with assumptions, A/B with one changed variable, KPI, control and observation dates. If resources are unknown, specify requirements without inventing budgets. User approval to research is not approval to hire/send/publish.
+Start with tests sized to the requested output and available resources, with a reason for prioritization. Each production-ready brief uses assets/shooting-brief.md: refs or explicit new-hypothesis status, exact opening, timed scene order, product selection, creator/location/props, voice/text/sound/CTA, estimated effort with assumptions, A/B with one changed variable, KPI, control and observation dates. If resources are unknown, specify requirements without inventing budgets. User approval to research is not approval to hire/send/publish.
 
 Use human-readable report and source appendices. Count discovery, metadata, dated posts and detailed reviews separately. Generate every numerical statement from the same computed data as its table. Avoid history-dependent phrases such as “expanded from 8 to 25” or “the new sample changes priorities”; a reader should understand the document without prior iterations.
 
@@ -12,4 +12,4 @@ Evidence gate: verified date for every claimed fresh case, sources for counters/
 
 Experiment states: idea, ready_to_shoot, published, awaiting_observation, insufficient_data, repeat, revise, expand, stop. Store version/parent/changed variable, product and distribution context, timestamps and actual metrics. One above-median post can be a candidate, not automatic SCALE. Do not freeze every component as “proven” by one winner. A weak result is not a permanent format ban. Compare age and relevant KPI to appropriate controls; organic variant comparisons remain observational when audiences/exposure differ. Log retrospective corrections with date instead of rewriting history.
 
-Keep competitor observations, brand hypotheses and own test outcomes separate. Skill heuristics do not become measured performance. Generic rule updates require evidence review and approval; do not mutate SKILL.md after every run.
+Keep competitor observations, brand hypotheses and own test outcomes separate. Optional user-approved brand heuristics do not become measured performance. Generic rule updates require evidence review and approval; do not mutate SKILL.md after every run.

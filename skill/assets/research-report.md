@@ -1,8 +1,8 @@
 # {Brand}: what to test now
-Window / observed at / platform / coverage status.
+Window / observed at / platform / timezone / coverage status.
 
-## First three tests
-Recommendation, task, reason, source, effort and next action. Links to full production briefs.
+## Priority tests
+Recommendation, task, reason, source, effort and next action; count follows the brief and available resources. Links to full production briefs.
 
 ## What the evidence supports
 Fresh examples, repeated patterns and measured growth separately. Signal/confidence/transferability separately. Include ordinary or weak comparison examples and competing explanations.

@@ -59,7 +59,7 @@ def numeric_metrics(m):
         if v is not None and (isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) or v<0):
             raise ValueError('Invalid nonnegative metric '+k)
 
-def init(project,registry=None,timezone='Europe/Moscow',name='Trendwatch'):
+def init(project,registry=None,timezone='UTC',name='Trendwatch'):
     ZoneInfo(timezone)
     with locked(project) as p:
         if (p/'state.json').exists(): raise ValueError('Project exists; use ingest')
@@ -71,7 +71,7 @@ def init(project,registry=None,timezone='Europe/Moscow',name='Trendwatch'):
             url=r.get('profile_url')
             if not url and r.get('handle'):
                 url=('https://www.tiktok.com/@' if platform=='tiktok' else 'https://www.instagram.com/')+r['handle']+'/'
-            approved=r.get('approved',True)
+            approved=r.get('approved',False)
             if not isinstance(approved,bool): raise ValueError('approved must be boolean')
             profiles.append({'name':r.get('brand',r.get('name')),'handle':r.get('handle'),'platform':platform,'approved':approved,'status':r.get('status','unverified'),'profile_url':url,'verification_source':r.get('verification_source'),'role':r.get('role','approved_brand'),'inclusion_reason':r.get('note',r.get('inclusion_reason'))})
         s={'schema_version':2,'project_name':name,'timezone':timezone,'monitor_days':7,'profiles':profiles,'posts':{},'observations':[],'audio_observations':[],'attempts':[],'created_at':now()}
@@ -84,7 +84,7 @@ def ingest(project,payload):
         approved={r['handle'] for r in s['profiles'] if r.get('approved') and r.get('handle')}
         for row in payload.get('posts',[]):
             row=copy.deepcopy(row)
-            for k in ('id','handle','url','source'): 
+            for k in ('id','handle','url','source'):
                 if not row.get(k): raise ValueError('Post missing '+k)
             if row['handle'] not in approved: raise ValueError('Handle outside approved registry: '+row['handle'])
             if row.get('published_at'): stamp(row['published_at'])
@@ -154,7 +154,9 @@ def ingest(project,payload):
 
 def queue(state,at):
     stamp(at);out=[]
+    approved={r['handle'] for r in state['profiles'] if r.get('approved') and r.get('handle')}
     for post in state['posts'].values():
+        if post['handle'] not in approved: continue
         status=observation_status(state,post,at)
         if status in ('due','needs_publication_timestamp'):
             out.append({**post,'status':status,'age_day':age_day(post,at) if post.get('published_at') else None})
@@ -221,7 +223,23 @@ def validate_state(s):
     return {'status':'PASS','profiles':len(s['profiles']),'posts':len(s['posts']),'observations':len(s['observations']),'audio_observations':len(s['audio_observations'])}
 
 def render(project):
-    p=Path(project);s=read(p/'state.json');report={'as_of':now(),'quality':validate_state(s),'changes':changes(s['observations']),'audio_changes':changes(s['audio_observations'],'audio_id','uses'),'posts':[]}
+    p=Path(project);s=read(p/'state.json')
+    language=s.get('report_language', 'en')
+    russian=language.lower() in ('ru', 'russian', 'русский')
+    labels=(
+        dict(lang='ru', suffix='ежедневные снимки', unknown='недоступно', none='нет замеров',
+             note='Дни отсчитываются от публикации. Пропуски не восстановлены задним числом. Будущие дни также показаны как ещё не наблюдавшиеся; точное время каждого замера сохранено.',
+             count='Проверенные наблюдения', access='Наличие расписания не подтверждает успешный доступ к источнику.',
+             headers=['Публикация','Опубликована','Дни с замерами','Дни без замеров','Просмотры','Последний замер','Источник счётчиков'],
+             changes='Расчёты и изменения', sources='Источники наблюдений')
+        if russian else
+        dict(lang='en', suffix='daily observations', unknown='unavailable', none='no observations',
+             note='Age-days start at publication. Missed days are never backfilled. Future days are also listed as not yet observed; each observation retains its actual timestamp.',
+             count='Verified observations', access='A configured schedule does not prove successful source access.',
+             headers=['Post','Published','Observed age-days','Unobserved age-days','Views','Last observed','Counter source'],
+             changes='Calculations and changes', sources='Observation sources')
+    )
+    report={'as_of':now(),'report_language':labels['lang'],'quality':validate_state(s),'changes':changes(s['observations']),'audio_changes':changes(s['audio_observations'],'audio_id','uses'),'posts':[]}
     for post in s['posts'].values():
         oo=sorted([o for o in s['observations'] if o['id']==post['id']],key=lambda o:stamp(o['observed_at']))
         report['posts'].append({**post,'observed_days':sorted({o['age_day'] for o in oo if o['age_day'] is not None and not o.get('excluded_from_age_day_series')}),'missing_days':[i for i in range(1,8) if not any(o['age_day']==i for o in oo)],'latest':oo[-1] if oo else None})
@@ -229,9 +247,10 @@ def render(project):
     esc=lambda v:html.escape(str(v));rows=[]
     for x in report['posts']:
         latest=x['latest'];views=latest['metrics'].get('views') if latest else None
-        rows.append('<tr><td><a href="'+esc(x['url'])+'">'+esc(x['handle']+' / '+x['id'])+'</a></td><td>'+esc(x.get('published_at') or x.get('published_date'))+'</td><td>'+esc(x['observed_days'])+'</td><td>'+esc(x['missing_days'])+'</td><td>'+esc(views if views is not None else 'недоступно')+'</td><td>'+esc(latest['observed_at'] if latest else 'нет замеров')+'</td><td>'+esc(latest['surface'] if latest else 'нет замеров')+'</td></tr>')
-    title=esc(s.get('project_name','Trendwatch'))+': ежедневные снимки'
-    content='<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title><style>body{font:16px/1.6 system-ui;max-width:1200px;margin:40px auto;padding:0 20px}table{border-collapse:collapse;font-size:14px}td,th{padding:10px;border-bottom:1px solid #ccc;text-align:left}.scroll{overflow:auto}</style><h1>'+title+'</h1><p>Дни отсчитываются от публикации. Пропуски не восстановлены задним числом. Будущие дни также показаны как ещё не наблюдавшиеся; точное время каждого замера сохранено.</p><p>Проверенные наблюдения: '+str(len(s['observations']))+'. Наличие расписания не подтверждает успешный доступ к источнику.</p><div class="scroll"><table><tr><th>Ролик</th><th>Опубликован</th><th>Дни с замерами</th><th>Дни без замеров</th><th>Просмотры</th><th>Последний замер</th><th>Источник счётчиков</th></tr>'+''.join(rows)+'</table></div><p><a href="daily-summary.json">Расчёты и изменения</a> · <a href="state.json">Источники наблюдений</a></p></html>'
+        cells=[x.get('published_at') or x.get('published_date'), x['observed_days'], x['missing_days'], views if views is not None else labels['unknown'], latest['observed_at'] if latest else labels['none'], latest['surface'] if latest else labels['none']]
+        rows.append('<tr><td><a href="'+esc(x['url'])+'">'+esc(x['handle']+' / '+x['id'])+'</a></td>'+''.join('<td>'+esc(v)+'</td>' for v in cells)+'</tr>')
+    title=esc(s.get('project_name','Trendwatch'))+': '+labels['suffix']
+    content='<!doctype html><html lang="'+labels['lang']+'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title><style>body{font:16px/1.6 system-ui;max-width:1200px;margin:40px auto;padding:0 20px}table{border-collapse:collapse;font-size:14px}td,th{padding:10px;border-bottom:1px solid #ccc;text-align:left}.scroll{overflow:auto}</style><h1>'+title+'</h1><p>'+labels['note']+'</p><p>'+labels['count']+': '+str(len(s['observations']))+'. '+labels['access']+'</p><div class="scroll"><table><tr>'+''.join('<th>'+h+'</th>' for h in labels['headers'])+'</tr>'+''.join(rows)+'</table></div><p><a href="daily-summary.json">'+labels['changes']+'</a> · <a href="state.json">'+labels['sources']+'</a></p></html>'
     (p/'daily-report.html').write_text(content)
     return {'report':str(p/'daily-report.html'),**report['quality'],'changes':len(report['changes'])}
 
@@ -239,7 +258,7 @@ def main():
     a=argparse.ArgumentParser();sub=a.add_subparsers(dest='command',required=True)
     for cmd in ('init','ingest','queue','render','validate'):
         q=sub.add_parser(cmd);q.add_argument('--project',required=True)
-        if cmd=='init':q.add_argument('--registry');q.add_argument('--timezone',default='Europe/Moscow');q.add_argument('--name',default='Trendwatch')
+        if cmd=='init':q.add_argument('--registry');q.add_argument('--timezone',default='UTC');q.add_argument('--name',default='Trendwatch')
         if cmd=='ingest':q.add_argument('--input',required=True)
         if cmd=='queue':q.add_argument('--at',default=now());q.add_argument('--output')
     q=sub.add_parser('baseline');q.add_argument('--input',required=True);q.add_argument('--target',required=True)

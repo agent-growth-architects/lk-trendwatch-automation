@@ -41,3 +41,11 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+# Per-brand private inputs and generated project folders
+brand.json
+registry.json
+projects/
+project.json
+
+# Generated brand brief, regardless of custom project folder
+brief.md

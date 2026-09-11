@@ -25,7 +25,10 @@ class DataTests(unittest.TestCase):
             {'handle': 'denied', 'approved': False},
             {'handle': 'tik', 'approved': True, 'platform': 'tiktok'},
         ]))
-        tw.init(self.project, self.registry, name='Example & brand')
+        tw.init(self.project, self.registry, timezone='Europe/Moscow', name='Example & brand')
+        state = tw.read(self.project / 'state.json')
+        state['report_language'] = 'ru'
+        tw.write(self.project / 'state.json', state)
 
     def state(self):
         return tw.read(self.project / 'state.json')

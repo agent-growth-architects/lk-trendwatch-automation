@@ -1,22 +1,21 @@
 # Data and seven-day observations
 
-The helper is local stdlib Python 3.9+; it makes no network/browser calls. The agent collects through allowed tools, then feeds verified payloads. It does not provide Instagram access or a scheduler by itself.
+The helper is local stdlib Python 3.9+; it makes no network/browser calls. The agent collects through allowed tools, then feeds verified payloads. It does not provide platform access or a scheduler by itself. For a new brand, use [onboarding.md](onboarding.md) and `scripts/setup_project.py` to capture the brief, explicit timezone and approvals first.
 
 ## Storage and commands
 
-Use a project-specific monitoring directory. `state.json` holds approved profile registry, canonical post metadata, append-preserved observations, audio observations and attempts. Writes are locked and atomic. Reports are generated from this state, never copied numerical prose. Do not put account/project data in the installed skill.
+Use one project-specific monitoring directory per platform; post and audio IDs are not cross-platform keys. `state.json` holds the profile registry with approval flags, canonical post metadata, append-preserved observations, audio observations and attempts. Writes are locked and atomic. Reports are generated from this state, never copied numerical prose. Do not put account/project data in the installed skill.
 
 ```
-python3 scripts/trendwatch_data.py init --project PROJECT --registry REGISTRY_JSON --name BRAND_NAME
+python3 scripts/setup_project.py --project PROJECT --config BRAND_JSON --registry REGISTRY_JSON
 python3 scripts/trendwatch_data.py ingest --project PROJECT --input VERIFIED_BATCH_JSON
 python3 scripts/trendwatch_data.py queue --project PROJECT --output QUEUE_JSON
 python3 scripts/trendwatch_data.py render --project PROJECT
 python3 scripts/trendwatch_data.py validate --project PROJECT
 python3 scripts/trendwatch_data.py baseline --input COMPARABLE_ROWS_JSON --target REEL_ID
-python3 -m unittest discover -s tests -v
 ```
 
-Registry accepts a list or a previous dataset's `registry`. Preserve verification_source and coverage status. Publication owner may differ from grid handle; record resolved_author/coauthors as additional metadata and keep one canonical Reel ID across collaborators. Register only approved profiles; propose additions separately.
+Setup accepts a registry list with explicit boolean `approved` on every entry. Keep proposals unapproved; use verified real handles before live collection. The lower-level data initializer also accepts a previous dataset's `registry`; when using it directly, pass `--timezone IANA_TIMEZONE` explicitly and supply the same approval fields. Preserve verification_source and coverage status. Publication owner may differ from grid handle; record resolved_author/coauthors as additional metadata and keep one canonical post ID across collaborators. Only approved profiles with handles enter discovery; unapproved proposals are not collection targets.
 
 Batch example (values are schema examples, never upload as real observations):
 
@@ -49,4 +48,4 @@ Count resolution is the rounding step, e.g. 1.2K implies step 100. A change smal
 
 ## Automation boundary
 
-Create/update the actual supported scheduler only with user authorization. In Codex prefer a thread heartbeat, preserve existing matching automation when found and avoid duplicate schedules. State schedule and source-health status separately in the final reply. Without a working scheduler, provide the prepared configuration and exact blocker; do not claim ongoing monitoring.
+The project timezone is explicit and determines local calendar-day deduplication. Schedule configuration defaults to disabled with no local run time. Create/update the actual supported scheduler only with user authorization; verify that its timezone matches the agreed project timezone. In Codex prefer a thread heartbeat, preserve existing matching automation when found and avoid duplicate schedules. State schedule and source-health status separately in the final reply. Without a working scheduler, provide the prepared configuration and exact blocker; do not claim ongoing monitoring.

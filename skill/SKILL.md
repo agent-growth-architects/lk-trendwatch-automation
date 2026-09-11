@@ -2,17 +2,18 @@
 name: trendwatch
 description: Research Instagram Reels or TikTok examples, verify trends with dated observations, review video and audience responses, and turn findings into shootable tests for a brand. Use for trendwatching, competitor content research, daily metric snapshots, ideation from existing evidence, or reviewing published content tests.
 metadata:
-  version: "2.0"
+  version: "3.0"
 ---
 
 # Trendwatch
 
-Produce evidence a content team can use to decide what to shoot and what to test. Keep observations, interpretations, working heuristics and experiment results distinct. Use the requested platform and business model; do not assume an app, App Store funnel, TikTok, or AI production.
+Produce evidence a content team can use to decide what to shoot and what to test. Keep observations, interpretations, working heuristics and experiment results distinct. Adapt to any brand, product or service, audience, geography and production capacity. Use the requested platform and business model; do not assume a sector, sales funnel or production method.
 
 ## Start with the smallest relevant mode
 
 | Request | Work |
 |---|---|
+| Set up a brand | Gather a minimal brief, choose one platform and timezone, propose a registry and initialize local project data |
 | Select accounts | Verify identity, relevance, diversity and access; deliver a shortlist with reasons |
 | First research pass | Brief, access check, dated collection, baselines, detailed examples and shootable tests |
 | Refresh / daily snapshots | Discover new posts in approved profiles; update eligible posts and tracked sounds; reuse media |
@@ -25,20 +26,17 @@ Keep project data outside the installed skill. Find the existing project folder,
 
 If this entrypoint is a symlink, resolve its real path before loading relative references or scripts.
 
-Read [method.md](references/method.md) for a new research or trend assessment. Read only the selected platform reference: [Instagram](references/instagram.md) or [TikTok](references/tiktok.md). For detailed media review, load [video-review.md](references/video-review.md). For snapshots and project data, load [data-and-snapshots.md](references/data-and-snapshots.md). For deliverables and learning, load [production-and-release.md](references/production-and-release.md).
+For a new brand or monitoring project, read [onboarding.md](references/onboarding.md); setup starts with no enabled schedule and no heuristics. Read [method.md](references/method.md) for a new research or trend assessment. Read only the selected platform reference: [Instagram](references/instagram.md) or [TikTok](references/tiktok.md). For detailed media review, load [video-review.md](references/video-review.md). For snapshots and project data, load [data-and-snapshots.md](references/data-and-snapshots.md). For deliverables and learning, load [production-and-release.md](references/production-and-release.md).
 
-## Two retained working rules
+## Optional brand heuristics
 
-The user explicitly retained these rules on 2026-09-09. Keep them available for decisions:
+Default to `heuristics: []`. A brand may opt into a working heuristic only when its user approves the wording, scope and intended decision use. Keep it in that brand's project configuration, with approval context; never inherit another brand's thresholds or assumed uplifts. Record `basis: user_approved_brand_heuristic` and the rule used when it motivates a recommendation.
 
-1. **1000 views means passing the first algorithmic gate** on a cold/new account: use this as a heuristic to flag a candidate for iteration. It does not by itself prove distribution mechanics, qualify an established account as a winner, or trigger SCALE.
-2. **Trending sound increases reach by 2-3x**: retain this as an expected-benefit heuristic for prioritizing a suitable, platform-verified sound test. Do not multiply observed metrics, promise a forecast, or report that uplift as measured without a controlled result. Sound recency alone does not establish that it is trending.
-
-Record `basis: user_retained_heuristic` when either rule motivates a decision. Other algorithmic thresholds or numerical guarantees from the old skill are not defaults. User preferences do not replace observed results.
+A heuristic is a hypothesis or preference, not measured performance or a universal platform rule. It must not rewrite counters, manufacture forecasts, prove distribution mechanics or trigger expansion without appropriate test evidence.
 
 ## Research contract
 
-Set goal/KPI, platform, audience, approved accounts, observation window, sampling rule, deliverable and depth. Account registry must include verified handle/source, inclusion reason and role (direct, adjacent, creative reference, partner, own account). Keep unavailable identities visible; do not silently substitute namesakes.
+Set goal/KPI, platform, audience, approved accounts, observation window, sampling rule, deliverable and depth. Size the account shortlist to the goal, coverage needs and review resources; proposed accounts are not approved automatically. Use one platform per monitoring project so post and audio IDs cannot collide across platforms. Account registry must include verified handle/source, inclusion reason and role (direct, adjacent, creative reference, partner, own account). Keep unavailable identities visible; do not silently substitute namesakes.
 
 Before a large collection, test whether the current allowed access path yields publication date, numeric counters, comments, media and audio on a small varied sample. Record availability and fallback. Do not promise complete audiovisual analysis from metadata-only access.
 
@@ -57,7 +55,7 @@ Collect sequentially to the window boundary or a declared limit. Label partial g
 
 ## Daily observations: first seven days after posting
 
-Default to one snapshot per tracked Reel per day during its first seven age-days, anchored to publication, not discovery. The daily collector discovers new posts in approved accounts and stops polling each at 168 hours. Save actual `observed_at` and `age_hours`; fixed-time daily checks are not exact 24/72/168-hour measurements. Late discoveries retain missing earlier age-days. Date-only publication metadata needs verification before an exact age-day is assigned.
+Default to one snapshot per tracked post per day during its first seven age-days, anchored to publication, not discovery. The daily collector discovers new posts in approved accounts and stops polling each at 168 hours. Save actual `observed_at` and `age_hours`; fixed-time daily checks are not exact 24/72/168-hour measurements. Late discoveries retain missing earlier age-days. Date-only publication metadata needs verification before an exact age-day is assigned.
 
 Use an existing appropriate scheduler when the user authorizes recurring collection; do not schedule merely because the skill was loaded. In Codex, use the automation tool, defaulting to a thread heartbeat. Scheduling and successful source collection are separate checks. No guarantee of seven observations if access fails, the host is unavailable or discovery is late.
 
@@ -71,7 +69,7 @@ For temporary failures, make a bounded retry and then use an authorized alternat
 
 ## Deliverable and ready state
 
-Lead with three recommended tests and why they fit the brand. Follow with verified examples, comparison/limitations, exact coverage funnel and production briefs. Give the requested count of ideas; weaker/new hypotheses must be marked, not dressed up as observed winners.
+Lead with a prioritized set of tests and why they fit the brand; up to three is a useful default when evidence and resources support them. Follow with verified examples, comparison/limitations, exact coverage funnel and production briefs. Give the requested count of ideas; weaker/new hypotheses must be marked, not dressed up as observed winners.
 
 Use [research-report.md](assets/research-report.md), [shooting-brief.md](assets/shooting-brief.md) and [experiment.md](assets/experiment.md). A fresh case needs a verified date/source; a recommendation needs references or a new-hypothesis label. Missing required evidence moves a case to a limited-evidence appendix; useful verified work can still ship with an explicit coverage status.
 
