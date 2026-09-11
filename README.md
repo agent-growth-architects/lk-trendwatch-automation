@@ -1,8 +1,18 @@
 # Trendwatch
 
-A skill for researching Instagram Reels and TikTok content around your brand's goals. Use it to choose accounts to monitor, find fresh examples, review videos and comments, prepare filming briefs, and compare the results of your own content tests.
+Turn Instagram Reels and TikTok research into practical content tests for your brand.
 
-It supports product, service, and personal brands. You define the audience, offering, language, goals, and production constraints during setup. No competitors or industry strategy are preselected.
+## Five key features
+
+- **Research tailored to your brand.** Choose reference accounts and content ideas around your audience, offering, goals, and production resources.
+- **Trends backed by evidence.** Keep dated sources, compare posts with an appropriate account baseline, and distinguish fresh examples from measured growth.
+- **Detailed video breakdowns.** Examine hooks, scene structure, editing, subtitles, voice, music, calls to action, and audience comments, with gaps clearly marked.
+- **Seven-day performance tracking.** With authorized daily monitoring, track available post metrics during the first 168 hours after publication and record related audio-use counts.
+- **Filming briefs and a test log.** Turn findings into timed scenes, copy, resource requirements, and variants with a measurement plan, then use your results to guide the next test.
+
+## How it works
+
+Give the agent your brand brief and approve the accounts it proposes. It uses your environment's permitted tools to collect available platform evidence, while local Python helpers store observations, prevent duplicate snapshots, and calculate comparisons. The agent reviews selected examples and produces a report with filming briefs; optional monitoring runs through a separately configured scheduler using your own source access.
 
 ## Start with an agent
 
