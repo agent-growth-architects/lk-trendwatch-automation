@@ -1,48 +1,48 @@
 # Trendwatch
 
-Скилл для исследования Instagram Reels и TikTok под задачи вашего бренда. Помогает выбрать аккаунты для наблюдения, найти свежие примеры, разобрать видео и комментарии, подготовить задания на съёмку и сравнить результаты собственных тестов.
+A skill for researching Instagram Reels and TikTok content around your brand's goals. Use it to choose accounts to monitor, find fresh examples, review videos and comments, prepare filming briefs, and compare the results of your own content tests.
 
-Подходит для товаров, услуг и личных брендов. Аудитория, продукт, язык, цель и ограничения задаются при первом запуске. В пакете нет заранее выбранных конкурентов или отраслевой стратегии.
+It supports product, service, and personal brands. You define the audience, offering, language, goals, and production constraints during setup. No competitors or industry strategy are preselected.
 
-## Начать с агентом
+## Start with an agent
 
-Скачайте репозиторий и передайте агенту папку `skill/` с таким запросом:
+Download this repository and give your agent the `skill/` folder with this request:
 
-> Используй скилл trendwatch из этой папки для моего бренда. Сначала выясни, что мы продаём, кому, на какой платформе и какой результат хотим получить. Предложи подходящие аккаунты для наблюдения и объясни выбор. После согласования списка проверь доступные источники и проведи первый проход. Мне нужны проверенные примеры и задания на съёмку, применимые к моему продукту. Пока работаем разово, без расписания.
+> Use the trendwatch skill in this folder for my brand. First establish what we sell, who our audience is, which platform we use, and what outcome we want. Suggest suitable accounts to study and explain your choices. Once I approve the list, check the available sources and conduct a first research pass. I need verified examples and filming briefs that fit my product. Start with a one-off project; do not create a schedule yet.
 
-Агент прочитает [SKILL.md](skill/SKILL.md) и [инструкцию первого запуска](skill/references/onboarding.md). Если часть вводных уже есть в ваших файлах, он использует их. Необязательные неизвестные параметры остаются открытыми, а существенные вопросы задаются до зависимой работы.
+The agent will read [SKILL.md](skill/SKILL.md) and the [onboarding guide](skill/references/onboarding.md). It will reuse relevant context from your files, leave optional unknowns open, and ask about essential missing details before proceeding with work that depends on them.
 
-В средах с поддержкой локальных скиллов поместите содержимое `skill/` в папку `trendwatch` внутри каталога скиллов вашей среды. Существующую установку сначала проверьте, чтобы не затереть собственные изменения. В среде без загрузчика достаточно поручить агенту прочитать `skill/SKILL.md` и связанные материалы. Совместимость браузерных инструментов проверяется отдельно.
+If your environment supports local skills, copy the contents of `skill/` into a folder named `trendwatch` in its skills directory. Check any existing installation first to avoid overwriting your own changes. Without a skill loader, ask the agent to read `skill/SKILL.md` and its linked resources directly. Browser-tool compatibility must be checked separately.
 
-## Что указать о бренде
+## Define your brand
 
-| Вводная | Пример содержания |
+| Input | What to provide |
 |---|---|
-| Бренд и продукт | Что продаёте или какую услугу оказываете |
-| Аудитория | Для кого продукт, язык, география, задача покупателя |
-| Платформа | Instagram или TikTok; отдельный проект данных для каждой |
-| Цель и KPI | Узнаваемость, охват, подписки, интерес к продукту или другой измеримый результат |
-| Производство | Доступные товары, люди, места, бюджет, ограничения съёмки |
-| Предыдущие результаты | Собственные публикации, тесты и доступная статистика |
-| Формат результата | Разбор, набор идей, задания на съёмку или ежедневные замеры |
-| Время | Часовой пояс; время запуска нужно только для согласованного мониторинга |
+| Brand and offering | The products you sell or services you provide |
+| Audience | Intended customers, language, location, and customer needs |
+| Platform | Instagram or TikTok; use a separate data project for each |
+| Goal and KPI | Awareness, reach, follows, product interest, or another measurable outcome |
+| Production resources | Available products, people, locations, budget, and filming constraints |
+| Previous results | Your own posts, experiments, and available analytics |
+| Deliverable | Research, ideas, filming briefs, or daily observations |
+| Timing | Your timezone; a run time is needed only for authorized recurring monitoring |
 
-Количество аккаунтов определяется задачей и возможностями сбора. Агент может предложить конкурентов, смежные бренды, авторов с полезными приёмами и собственный аккаунт. Предложение не означает автоматического одобрения. Для каждого выбранного профиля сохраняются роль, причина включения и подтверждение идентичности.
+The account count depends on the research goal and collection capacity. The agent may suggest competitors, adjacent brands, creators with useful techniques, and your own account. Suggestions are not automatically approved. Each selected profile retains its role, inclusion reason, and identity-verification evidence.
 
-## Создать папку данных
+## Create a data project
 
-Python-часть работает на macOS и Linux с Python 3.9 или новее и доступной базой часовых поясов. Используется стандартная библиотека; для Windows нужна среда Linux, например WSL. Установка Python-пакетов для запуска обработчика не требуется.
+The Python tools run on macOS and Linux with Python 3.9 or later and an available timezone database. They use the standard library; no additional Python packages are required for data processing. On Windows, use a Linux environment such as WSL.
 
-Из корня репозитория создайте локальные копии шаблонов, если этих файлов ещё нет:
+From the repository root, create local copies of the templates if these files do not already exist:
 
 ```bash
 cp -n templates/brand.example.json brand.json
 cp -n templates/registry.example.json registry.json
 ```
 
-Заполните `brand.json`: обязательны `name`, `platform`, `timezone` и `goal`. Часовой пояс задаётся IANA-именем, например `Europe/Berlin`, `America/New_York` или `UTC`. Остальные поля дополняются по мере уточнения. `heuristics` по умолчанию пуст: никакие числовые правила чужого бренда не наследуются.
+Fill in `brand.json`. The required fields are `name`, `platform`, `timezone`, and `goal`. Use an IANA timezone such as `Europe/Berlin`, `America/New_York`, or `UTC`. Add other details as they become known. `heuristics` starts empty; numerical rules from another brand are not inherited.
 
-`registry.json` начинается с пустого списка. Согласованные профили добавляются по [схеме реестра](skill/references/onboarding.md). Для каждой записи нужен явный `approved`. При неизвестном handle бренд можно сохранить как неустановленный; подменять его похожим аккаунтом нельзя.
+`registry.json` starts as an empty list. Add selected profiles using the [registry schema](skill/references/onboarding.md). Every entry needs an explicit `approved` value. If a handle is unknown, retain the brand as unresolved rather than substituting a similarly named account.
 
 ```bash
 python3 skill/scripts/setup_project.py --project projects/my-brand --config brand.json --registry registry.json
@@ -50,52 +50,52 @@ python3 skill/scripts/trendwatch_data.py queue --project projects/my-brand --out
 python3 skill/scripts/trendwatch_data.py validate --project projects/my-brand
 ```
 
-Команда создаст отдельную папку с брифом, настройками, реестром, пустой историей и начальным отчётом. Пустой отчёт подтверждает подготовку проекта; живых наблюдений в нём пока нет. Уже существующую папку setup не перезаписывает. Для следующего бренда выберите другой путь и его собственные настройки.
+Setup creates a separate directory containing a brief, configuration, registry, empty observation history, and an initial report. An empty report confirms project preparation; it contains no live observations yet. Setup refuses to overwrite an existing directory. For another brand, choose a different project path and supply that brand's configuration.
 
-## Согласовать аккаунты после подготовки
+## Approve accounts after setup
 
-Заполните локальный `registry.json` проверенными профилями и отметьте одобренные как `approved: true`. Затем примените список:
+Fill your local `registry.json` with verified profiles and mark approved entries as `approved: true`. Then apply the list:
 
 ```bash
 python3 skill/scripts/update_registry.py --project projects/my-brand --registry registry.json
 python3 skill/scripts/trendwatch_data.py queue --project projects/my-brand --output projects/my-brand/queue.json
 ```
 
-Команда обновляет рабочий реестр без удаления истории. Профили, которых больше нет в новом списке, сохраняются с выключенным одобрением и перестают попадать в очередь. Пустой исходный список можно пополнять этим же способом. Сама команда не проверяет Instagram или TikTok: подтверждение идентичности и разрешение на наблюдение записывает исполнитель по фактическим источникам и решению владельца.
+This updates the working registry without deleting history. Profiles omitted from the new list remain stored with approval disabled and leave the queue. Use the same command to populate an initially empty registry. The command does not verify Instagram or TikTok accounts: the operator records identity evidence and the owner's approval from actual sources and decisions.
 
-## Первый исследовательский проход
+## Conduct the first research pass
 
-Агент проверяет доступ к выбранной платформе на небольшой выборке: даты, счётчики, комментарии, видео и аудио. Затем собирает публикации из согласованных аккаунтов до границы периода или объявленного предела. Полнота просмотра и недоступные поля остаются видимыми в отчёте.
+The agent checks source access on a small sample: publication dates, counters, comments, video, and audio. It then collects posts from approved accounts through the selected time window or a declared limit. The report records coverage and unavailable fields.
 
-Из этой выборки выбираются заметные примеры и обычные публикации для сравнения. Подробный разбор включает первый кадр, обещание в начале, порядок сцен, показ продукта или услуги, монтаж, субтитры, голос, музыку, призыв к действию и комментарии. Для каждой части указывается, что проверено и каким способом.
+The selection includes notable examples and ordinary posts for comparison. Detailed reviews cover the first frame, opening promise, scene order, product or service presentation, editing, subtitles, voice, music, calls to action, and comments. Each finding states what was reviewed and how.
 
-Результат начинается с трёх приоритетных тестов либо другого согласованного количества. В каждом задании нужны задача аудитории, подходящий продукт, первый кадр, сцены по времени, текст, звук, ресурсы, проверяемое изменение и способ измерить результат. Новая идея без наблюдаемого аналога обозначается как гипотеза.
+The deliverable starts with three priority tests, or another agreed number. Each filming brief includes the audience's need, a suitable offering, first frame, timed scenes, copy, sound, resources, the variable being tested, and a measurement plan. Ideas without an observed reference are labeled as hypotheses.
 
-## Ежедневный мониторинг
+## Run daily monitoring
 
-Если он нужен, согласуйте время и часовой пояс, затем используйте [задание для автоматизации](AUTOMATION_PROMPT.md). Setup сохраняет расписание выключенным и не создаёт планировщик. Файл конфигурации сам по себе ничего не запускает.
+If recurring monitoring is needed, agree on a time and timezone, then use the [automation prompt](AUTOMATION_PROMPT.md) (Russian). Setup leaves scheduling disabled and does not create a scheduler. A configuration file alone does not start any recurring work.
 
-В режиме мониторинга новые публикации обнаруживаются постоянно. Каждый ролик получает не более одного успешного замера на возрастной день и на календарный день проекта в первые 168 часов после публикации. Позднее обнаружение и сбои оставляют пропуски. Фиксированное время обхода не означает замер ровно через 24, 72 или 168 часов.
+Monitoring keeps discovering new posts. Each post receives at most one successful observation per age-day and per project calendar day during its first 168 hours after publication. Late discovery and failed runs leave gaps. A fixed daily run time does not produce measurements at exactly 24, 72, or 168 hours of age.
 
-Аудиосчётчики записываются отдельно. Один большой счётчик показывает распространённость звука; рост требует повторных сопоставимых наблюдений. Ежедневный сбор цифр не включает полный новый видеоразбор и сценарии каждый день.
+Audio counts are tracked separately. A single large usage count indicates prevalence; growth requires repeated, comparable observations. Daily counter collection does not include a new full video review and script package every day.
 
-## Доступ и ограничения
+## Access and limitations
 
-Скилл задаёт работу агенту, а Python-инструменты сохраняют и проверяют полученные данные. Пакет не предоставляет аккаунт Instagram или TikTok, API-ключ, универсальный браузерный сборщик или собственный планировщик. Исполнитель использует разрешённые инструменты своей среды и проверяет их возможности до обещания полного результата.
+The skill guides the agent's work; the Python tools store and validate collected data. This package does not supply an Instagram or TikTok account, API key, universal browser collector, or scheduler. The operator uses permitted tools in their own environment and checks their capabilities before promising complete coverage.
 
-Неизвестные счётчики остаются неизвестными. Просмотры не подменяют уникальный охват, публичные репосты не подменяют личные отправки, транскрипт не подменяет прослушивание. Сила наблюдения, достоверность данных и применимость к бренду оцениваются отдельно.
+Unknown counters remain unknown. Views are not unique reach, public reposts are not private sends, and a transcript is not evidence of listening to the audio. Signal strength, evidence quality, and relevance to the brand are assessed separately.
 
-Бриф задаёт язык итогового текста агента. Встроенный табличный HTML-отчёт Python поддерживает русские и английские подписи. Для остальных языков он использует английские подписи, а агент пишет разбор на языке брифа. Расписание, доступ к источнику, полнота сбора и выпуск отчёта проверяются отдельно. Автономность зависит от среды принимающего агента.
+The brief sets the language of the agent's written analysis. The built-in Python HTML report supports Russian and English labels, with English as the fallback for other languages. Scheduling, source access, collection coverage, and report generation are verified separately. Unattended operation depends on the receiving agent's environment.
 
-## Проверка и устройство
+## Verification and architecture
 
 ```bash
 python3 -m unittest discover -s skill/tests -v
 python3 -m unittest discover -s tests -v
 ```
 
-- [Инструкция исполнителю](AGENT_HANDOFF.md): доступ, сохранение данных, продолжение после сбоя и приёмка.
-- [Устройство проекта](docs/architecture.md): границы кода, источников и планировщика.
-- [Шаблоны результата](skill/assets/research-report.md): отчёт, задания на съёмку и журнал экспериментов.
+- [Operator guide](AGENT_HANDOFF.md) (Russian): access, persistence, recovery, and acceptance checks.
+- [Architecture](docs/architecture.md): boundaries between code, sources, and scheduling.
+- [Output templates](skill/assets/research-report.md): research reports, filming briefs, and experiment logs.
 
-Настройки бренда, рабочие данные, медиа и credentials должны оставаться вне публичных коммитов. `.gitignore` исключает стандартные имена и папки, но перед публикацией собственных файлов всё равно проверяйте содержимое.
+Keep brand configuration, runtime data, media, and credentials out of public commits. `.gitignore` excludes standard filenames and directories, but inspect the contents before publishing your own files.

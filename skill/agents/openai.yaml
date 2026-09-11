@@ -1,4 +1,4 @@
 interface:
   display_name: "Trendwatch"
-  short_description: "Тренды, видеоразборы и проверяемые тесты для бренда"
-  default_prompt: "Используй $trendwatch для свежего исследования и подготовки применимых тестов для моего бренда."
+  short_description: "Research video trends and plan tests for your brand"
+  default_prompt: "Use $trendwatch to research current video trends and prepare practical content tests for my brand."
