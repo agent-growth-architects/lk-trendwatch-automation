@@ -1,0 +1,43 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+auth.json
+*cookie*
+.netrc
+.npmrc
+.ssh/
+.aws/
+.codex/
+# Runtime data and browser evidence
+data/
+runs/
+media/
+downloads/
+state.json
+queue.json
+daily-summary.json
+daily-report.html
+evidence.json
+verified-batch.json
+execution.json
+verification.json
+*.db
+*.sqlite*
+*.log
+*.har
+*.lock
+# Local build and editor files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+.idea/
+.vscode/

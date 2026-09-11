@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "scope": "Local package processing only; no live source or schedule execution at recipient",
+  "unit_tests_passed": 14,
+  "replay_checks": {
+    "registry_30_preserved": true,
+    "unresolved_four_preserved": true,
+    "reingest_no_duplicate_observations": true,
+    "report_matches_saved_state": true,
+    "report_created_from_replayed_evidence": true,
+    "portable_helpers_import_without_installed_skill": true,
+    "unknown_private_metrics_preserved": true,
+    "seven_day_age_window": true,
+    "replayed_reel_observations": 84,
+    "replayed_audio_observations": 65
+  },
+  "historical_raw_evidence_shipped": false,
+  "verified_at": "2026-09-10T12:31:02.754408+00:00",
+  "html_static_checks": {
+    "standalone_no_external_assets": true,
+    "navigation_anchors": true,
+    "registry_links": 26,
+    "tables": 5,
+    "skill_relative_links": true
+  },
+  "visual_review": {
+    "status": "BLOCKED",
+    "reason": "Browser URL security policy rejects local file URL. No workaround attempted. Visual rendering not confirmed."
+  },
+  "russian_editorial_review": "Blind review completed; corrections applied; final lint has zero errors in all three documents; remaining isolated warnings reviewed.",
+  "privacy_checks": "No user absolute paths, source task IDs, secret patterns, raw browser logs, private Insights or working state included.",
+  "archive_scope": "Only lk-trendwatch-automation directory; no build scripts or original data."
+}

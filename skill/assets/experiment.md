@@ -1,0 +1,12 @@
+# {Experiment ID}
+- Status / status date:
+- Parent / script version / changed variable:
+- Hypothesis and reference:
+- Product, creator, platform, own/partner account:
+- Published URL / exact publication timestamp:
+- Promotion, coauthors, offers or other distribution context:
+- KPI and control baseline with age/denominator:
+- Observations D1-D7: actual timestamps and ages, metric sources, gaps:
+- Outcome / alternative explanations / next action:
+- Any decision based on a retained heuristic must be labeled user_retained_heuristic.
+- Corrections are dated additions; no invented retrospective snapshots.

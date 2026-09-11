@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trendwatch"
+  short_description: "Тренды, видеоразборы и проверяемые тесты для бренда"
+  default_prompt: "Используй $trendwatch для свежего исследования и подготовки применимых тестов для моего бренда."
